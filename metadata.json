@@ -1,0 +1,6 @@
+{
+  "name": "TodoArchivos",
+  "description": "Aplicación para Android que permite registrarse, subir y compartir fotos, audios, documentos, videos, textos, con feed de publicaciones, chat y perfiles de usuario.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

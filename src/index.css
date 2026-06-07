@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* -------------------------------------------------------------
+   ESCALAS DE TAMAÑO DE FUENTE
+   ------------------------------------------------------------- */
+.font-scale-sm {
+  font-size: 0.88em !important;
+}
+.font-scale-base {
+  font-size: 1.0em !important;
+}
+.font-scale-lg {
+  font-size: 1.12em !important;
+}
+.font-scale-xl {
+  font-size: 1.25em !important;
+}
+
+/* -------------------------------------------------------------
+   ESTILOS DE MODO OSCURO (Overrides para la interfaz del demo)
+   ------------------------------------------------------------- */
+.dark-theme {
+  background: linear-gradient(0deg, #111B1F, #075427) !important; /* Fondo del teléfono en modo noche */
+  color: #f1f5f9 !important;
+}
+
+/* Encabezado y contenedores en modo oscuro */
+.dark-theme .header-accent {
+  background-color: #121e1a !important;
+  border-color: #1e3029 !important;
+}
+
+.dark-theme .header-text-white {
+  color: #ffffff !important;
+}
+
+.dark-theme .dark-mode-card,
+.dark-theme .bg-white,
+.dark-theme .bg-white\/95,
+.dark-theme .bg-white\/90,
+.dark-theme .bg-white\/85,
+.dark-theme .bg-white\/80,
+.dark-theme .bg-white\/75,
+.dark-theme form.bg-white\/95,
+.dark-theme button.bg-white,
+.dark-theme button.bg-white\/95 {
+  background-color: #121e1a !important; /* Tarjetas oscuras verde/coal */
+  border-color: #1e3029 !important;
+  color: #ffffff !important;
+}
+
+/* Forzar textos legibles en modo oscuro */
+.dark-theme .text-slate-850,
+.dark-theme .text-slate-800,
+.dark-theme .text-slate-705,
+.dark-theme .text-slate-900,
+.dark-theme .text-zinc-800,
+.dark-theme .text-gray-800,
+.dark-theme .text-gray-900,
+.dark-theme .text-slate-700,
+.dark-theme .text-slate-650 {
+  color: #ffffff !important;
+}
+
+.dark-theme .text-slate-400,
+.dark-theme .text-slate-500,
+.dark-theme .text-slate-450,
+.dark-theme .text-gray-500,
+.dark-theme .text-zinc-500 {
+  color: #cbd5e1 !important;
+}
+
+/* Bordes en modo oscuro */
+.dark-theme .border-slate-100,
+.dark-theme .border-slate-150,
+.dark-theme .border-slate-200,
+.dark-theme .order-slate-200,
+.dark-theme .border-gray-100,
+.dark-theme .border-gray-200,
+.dark-theme .border-white\/20,
+.dark-theme .border-white\/30,
+.dark-theme .border-white\/40,
+.dark-theme .border-slate-250 {
+  border-color: #1e3029 !important;
+}
+
+/* Inputs y formularios en modo oscuro */
+.dark-theme input,
+.dark-theme textarea,
+.dark-theme select {
+  background-color: #162620 !important;
+  border-color: #243c33 !important;
+  color: #f8fafc !important;
+}
+
+.dark-theme input::placeholder,
+.dark-theme textarea::placeholder {
+  color: #4b6e5f !important;
+}
+
+/* Fondo para vistas individuales, chats y elementos secundarios */
+.dark-theme .bg-slate-50,
+.dark-theme .bg-slate-100,
+.dark-theme .bg-gray-50,
+.dark-theme .bg-gray-100 {
+  background-color: #172822 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark-theme .hover\:bg-slate-50:hover,
+.dark-theme .hover\:bg-gray-50:hover,
+.dark-theme .hover\:bg-slate-100:hover,
+.dark-theme .hover\:bg-white:hover {
+  background-color: #21382f !important;
+}
+
+/* Barra de navegación inferior móvil en modo oscuro */
+.dark-theme .absolute.bottom-0.inset-x-0.bg-white\/95 {
+  background-color: #121e1a !important;
+  border-color: #1e3029 !important;
+}
+
+/* Textos claros para chats de burbuja */
+.dark-theme .bg-slate-100 {
+  background-color: #172822 !important;
+}
+
+/* Botones y diálogos */
+.dark-theme .dialog-background {
+  background-color: rgba(11, 24, 20, 0.8) !important;
+}

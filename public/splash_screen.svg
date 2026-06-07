@@ -1,0 +1,35 @@
+<svg width="100%" height="100%" viewBox="0 0 450 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background dynamic gradients for layered organic wave shapes -->
+    <linearGradient id="splashGradBack" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4ade80" />
+      <stop offset="60%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+    
+    <linearGradient id="splashGradFront" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22c55e" />
+      <stop offset="45%" stop-color="#14b8a6" />
+      <stop offset="80%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Clean, high-contrast white layout backdrop -->
+  <rect width="450" height="900" fill="#FFFFFF" />
+
+  <!-- Layer 1: Elegant semi-transparent back curve -->
+  <path d="M 120 0 
+           C 260 120, 520 240, 360 550 
+           C 200 860, 160 760, 280 900 
+           L 450 900 L 450 0 Z" 
+        fill="url(#splashGradBack)" 
+        opacity="0.35" />
+
+  <!-- Layer 2: Main vivid organic gradient sweep matching user's splash curve patterns -->
+  <path d="M 210 0 
+           C 310 160, 410 320, 260 500 
+           C 110 680, 290 760, 190 900 
+           L 450 900 L 450 0 Z" 
+        fill="url(#splashGradFront)" />
+</svg>
