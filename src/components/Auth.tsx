@@ -91,7 +91,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col md:flex-row min-h-screen bg-[linear-gradient(0deg,#111B1F,#075427)] overflow-hidden">
+    <div className="flex-1 flex flex-col rounded-xl md:flex-row min-h-screen md:bg-[linear-gradient(0deg,#111B1F,#075427)] overflow-hidden">
       {/* LEFT COLUMN: Features & Branding (Visible on desktop/monitors, hidden on phone screens) */}
       <div className="hidden md:flex md:w-1/2 flex-col justify-between p-12 text-white relative overflow-hidden bg-gradient-to-b from-[#10b981]/25 via-[#06b6d4]/10 to-transparent border-r border-white/5">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.15),transparent_60%)] pointer-events-none" />
@@ -101,7 +101,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
           <div className="flex items-center gap-3">
             <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/35 shadow-xl p-2 relative overflow-hidden hover:rotate-3 transition-transform duration-300">
               <img 
-                src="/app_logo.svg" 
+                src="/app_logo.jpg" 
                 alt="TodoArchivos Logo" 
                 className="w-full h-full object-contain"
                 referrerPolicy="no-referrer"
@@ -116,10 +116,10 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
 
           <div className="mt-12 space-y-6">
             <h2 className="text-3xl font-black tracking-tight text-white leading-tight">
-              Sube, comparte y discute tus apuntes académicos en tiempo real.
+              Sube y comparte tus archivos en tiempo real.
             </h2>
             <p className="text-slate-300 text-sm font-medium leading-relaxed max-w-md">
-              La plataforma definitiva para estudiantes y profesionales para sincronizar archivos, unirse a canales grupales y chatear sobre documentos clave de forma segura.
+              La plataforma definitiva para quienes busquen almacenar sus archivos, unirse a canales grupales y chatear sobre documentos clave de forma segura todo en un solo lugar.
             </p>
           </div>
         </div>
@@ -140,30 +140,24 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
 
           <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
             <span className="w-8 h-8 rounded-lg bg-indigo-500/25 text-indigo-400 flex items-center justify-center font-bold text-sm mb-2.5">👥</span>
-            <h4 className="font-bold text-xs text-white">Grupos de Estudio</h4>
+            <h4 className="font-bold text-xs text-white">Grupos de Interés</h4>
             <p className="text-[10.5px] text-slate-400 font-semibold mt-1">Encuentra o crea salas para compartir materiales con tu equipo.</p>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
-            <span className="w-8 h-8 rounded-lg bg-amber-500/25 text-amber-400 flex items-center justify-center font-bold text-sm mb-2.5">⚡</span>
-            <h4 className="font-bold text-xs text-white">Conexión Directa</h4>
-            <p className="text-[10.5px] text-slate-400 font-semibold mt-1">Canales e inicio de sesión integrados en tiempo real con la nube de Supabase.</p>
           </div>
         </div>
 
         {/* Footer info */}
         <div className="text-slate-500 text-[10px] font-bold uppercase tracking-wider z-10 select-none">
-          © 2026 TodoArchivos Solutions Group
+          © 2026 TodoArchivos
         </div>
       </div>
 
       {/* RIGHT COLUMN: Auth Box (Adapts to full screen on mobile, and standard half screen card on desktop) */}
-      <div className="w-full md:w-1/2 flex flex-col justify-between px-6 py-8 md:py-12 overflow-y-auto bg-gradient-to-b from-[#10b981] via-[#06b6d4] to-[#0ea5e9] md:bg-[linear-gradient(0deg,#111B1F,#075427)]">
+      <div className="w-full md:w-1/2 flex flex-col justify-between px-6 py-8 md:py-12 overflow-y-auto md:bg-[linear-gradient(0deg,#111B1F,#075427)]">
         {/* On mobile, show header logo */}
         <div className="flex md:hidden flex-col items-center justify-center my-4">
           <div className="w-20 h-20 rounded-[28px] bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-xl mb-3 relative overflow-hidden p-2.5">
             <img 
-              src="/app_logo.svg" 
+              src="/app_logo.jpg" 
               alt="TodoArchivos Logo" 
               className="w-full h-full object-contain"
               referrerPolicy="no-referrer"
@@ -365,7 +359,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
 
         {/* Mobile-only footer copyright */}
         <div className="mt-6 md:hidden text-center text-white/50 text-[9px] font-bold uppercase tracking-wider">
-          © 2026 TodoArchivos Solutions
+          © 2026 TodoArchivos
         </div>
       </div>
     </div>
