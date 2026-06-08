@@ -62,7 +62,20 @@ const CATEGORY_DETAILS: Record<FileCategory, { ico: React.ComponentType<any>; co
   code: { ico: Code, col: 'text-rose-500', lbl: 'Código' },
   box: { ico: Box, col: 'text-yellow-500', lbl: 'Paquete/Zip' }
 };
-
+const CATEGORY_ACCEPT: Record<FileCategory, string> = {
+  document: '.pdf,.doc,.docx,.txt,.odt,.rtf',
+  photo: 'image/*',
+  video: 'video/*',
+  audio: 'audio/*',
+  location: '.kml,.gpx',
+  website: '',
+  chrome: '',
+  instagram: '',
+  github: '',
+  twitter: '',
+  code: '.ts,.js,.tsx,.jsx,.py,.cpp,.c,.h,.java,.html,.css,.json',
+  box: '.zip,.rar,.tar,.gz,.7z'
+};
 export default function GroupsView({ currentUser, onOpenChat, onBack }: GroupsViewProps) {
   const [groups, setGroups] = useState<Group[]>([]);
   const [activeGroup, setActiveGroup] = useState<Group | null>(null);
@@ -326,7 +339,29 @@ export default function GroupsView({ currentUser, onOpenChat, onBack }: GroupsVi
       'warning'
     );
   };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) {
+        setPubFileName('');
+        setPubFileSize('');
+        setPubUrl('');
+        return;
+      }
 
+      setPubFileName(file.name);
+
+      const sizeInBytes = file.size;
+      const sizeInKB = sizeInBytes / 1024;
+      const computedSize = sizeInKB > 1024 ? (sizeInKB / 1024).toFixed(1) + ' MB' : Math.round(sizeInKB) + ' KB';
+      setPubFileSize(computedSize);
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const resultStr = reader.result as string;
+        setPubUrl(resultStr);
+      };
+      reader.readAsDataURL(file);
+    };
   // Publish File inside Group
   const handlePublishToGroupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1120,35 +1155,27 @@ export default function GroupsView({ currentUser, onOpenChat, onBack }: GroupsVi
                 />
               </div>
 
-              {/* Advanced Simulated file values (so users don't have to upload massive raw files) */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Nombre Físico del Archivo</label>
-                  <input
-                    type="text"
-                    placeholder="ej: guia_final.pdf"
-                    value={pubFileName}
-                    onChange={(e) => setPubFileName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-1.5 px-3 text-[10px] text-slate-600 focus:outline-none focus:ring-1 focus:ring-[#10b981]"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Peso o Tamaño</label>
-                  <input
-                    type="text"
-                    placeholder="ej: 1.4 MB o Enlace"
-                    value={pubFileSize}
-                    onChange={(e) => setPubFileSize(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-1.5 px-3 text-[10px] text-slate-650 focus:outline-none focus:ring-1 focus:ring-[#10b981]"
-                  />
-                </div>
+              {/* File upload selector replacing simulated inputs */}
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Seleccionar Archivo (Opcional)</label>
+                <input
+                  type="file"
+                  accept={CATEGORY_ACCEPT[pubCategory] || ''}
+                  onChange={handleFileChange}
+                  className="w-full bg-slate-50 border border-slate-200 hover:border-slate-350 focus:bg-white rounded-xl py-2 px-3 text-xs text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-[#10b981] cursor-pointer"
+                  id="group-file-upload-input"
+                />
+                {pubFileName && (
+                  <p className="text-[10.5px] text-[#10b981] font-bold mt-1.5 pl-1 select-none animate-pulse">
+                    ✓ Archivo cargado: {pubFileName} ({pubFileSize})
+                  </p>
+                )}
               </div>
-
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">URL del Archivo o Imagen (Opcional)</label>
                 <input
                   type="url"
-                  placeholder="Enlace o dejar en blanco para usar simulador offline..."
+                  placeholder="Enlace (opcional)"
                   value={pubUrl}
                   onChange={(e) => setPubUrl(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl py-1.5 px-3 text-[10px] text-slate-600 font-mono focus:outline-none focus:ring-1 focus:ring-[#10b981]"
