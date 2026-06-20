@@ -60,7 +60,6 @@ export default function Header({
         </div>
 
         <div className="flex items-center gap-1.5 relative">
-          {/* Notification Bell Button */}
           <button
             onClick={onOpenNotifications}
             className="w-9 h-9 flex items-center justify-center text-[#10b981] hover:bg-slate-100/70 rounded-full transition-all relative focus:outline-none cursor-pointer"
@@ -75,7 +74,6 @@ export default function Header({
             )}
           </button>
 
-          {/* Triple Dot Button */}
           <div className="relative md:hidden">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -85,10 +83,8 @@ export default function Header({
               <MoreVertical className="w-5 h-5" />
             </button>
 
-          {/* Custom Dropdown Option */}
           {dropdownOpen && (
             <>
-              {/* Invisible Clickable Backdrop */}
               <div 
                 className="fixed inset-0 z-40" 
                 onClick={() => setDropdownOpen(false)}
@@ -153,8 +149,8 @@ export default function Header({
               </div>
             </>
           )}
-          </div> {/* closes options relative container */}
-        </div> {/* closes header right button group wrapping container */}
+          </div>
+        </div> 
       </div>
     </div>
   );

@@ -108,7 +108,7 @@ export default function AccountView({ currentUser, onUpdateSuccess, onBack }: Ac
             setConfirmModal({
               isOpen: true,
               title: 'Error al Eliminar',
-              message: res.error || 'Ocurrió un error al intentar eliminar tu cuenta desde Supabase.',
+              message: res.error || 'Ocurrió un error al intentar eliminar tu cuenta.',
               statusType: 'error',
               isNotification: true,
               onConfirm: () => {}

@@ -71,8 +71,6 @@ export default function HomeView({ currentUser, onOpenChat, supabaseConnected }:
     });
   };
 
-  // Navigation states inside Home (sub-folders)
-  // 'root' is main page, 'my_files' is user's files, 'shared_files' is public shared, 'category' is specific categories
   const [activeSubFolder, setActiveSubFolder] = useState<'root' | 'my_files' | 'shared_files' | 'category'>('root');
   const [selectedCategory, setSelectedCategory] = useState<FileCategory | null>(null);
   
@@ -347,7 +345,7 @@ export default function HomeView({ currentUser, onOpenChat, supabaseConnected }:
                       {['code', 'box'].includes(file.category) && (
                         <div className="flex items-start gap-1.5 bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 p-2 rounded-xl text-[10px] font-bold select-none leading-snug animate-pulse">
                           <ShieldAlert className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-                          <span>⚠️ ALERTA DE SEGURIDAD Costa Rica: Revisa y audita este archivo de código antes de abrirlo en tu dispositivo.</span>
+                          <span>⚠️ ALERTA DE SEGURIDAD: Revisa y audita este archivo de código antes de abrirlo en tu dispositivo.</span>
                         </div>
                       )}
 
@@ -543,7 +541,7 @@ export default function HomeView({ currentUser, onOpenChat, supabaseConnected }:
                                 if (res.success) {
                                   triggerConfirm(
                                     'Archivo Eliminado', 
-                                    `El archivo "${file.name}" ha sido eliminado de la aplicación y de Supabase.`, 
+                                    `El archivo "${file.name}" ha sido eliminado de la aplicación.`, 
                                     () => { loadData(); }, 
                                     true, 
                                     'success'

@@ -6,10 +6,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { UserProfile, SharedFile, ChatMessage, FileCategory, SupabaseConfig, Group } from './types';
 
-// Supabase table schemas explanation:
-export const SUPABASE_SQL_SCHEMA = `-- EJECUTA ESTO EN TU EDITOR SQL DE SUPABASE:
-
--- 1. Tabla de Usuarios (Perfiles de la app)
+export const SUPABASE_SQL_SCHEMA = `
 CREATE TABLE IF NOT EXISTS public.ta_users (
   id UUID PRIMARY KEY,
   name TEXT NOT NULL,
@@ -20,7 +17,6 @@ CREATE TABLE IF NOT EXISTS public.ta_users (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 2. Tabla de Archivos
 CREATE TABLE IF NOT EXISTS public.ta_files (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES public.ta_users(id) ON DELETE CASCADE NOT NULL,
@@ -38,7 +34,6 @@ CREATE TABLE IF NOT EXISTS public.ta_files (
   likes INTEGER DEFAULT 0
 );
 
--- 3. Tabla de Mensajes de Chat
 CREATE TABLE IF NOT EXISTS public.ta_chat_messages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   file_id UUID REFERENCES public.ta_files(id) ON DELETE CASCADE NOT NULL,
@@ -49,7 +44,6 @@ CREATE TABLE IF NOT EXISTS public.ta_chat_messages (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. Tabla de Grupos de Comunidad
 CREATE TABLE IF NOT EXISTS public.ta_groups (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
@@ -170,7 +164,7 @@ export const localDB = {
     try {
       localStorage.setItem('supabase_config', JSON.stringify(config));
     } catch (e) {
-      console.error("Error al guardar configuración de Supabase:", e);
+      console.error("Error al guardar configuración:", e);
     }
   }
 };
@@ -186,7 +180,7 @@ export function getSupabase(): SupabaseClient | null {
       supabaseClient = createClient(config.url, config.anonKey);
       return supabaseClient;
     } catch (err) {
-      console.error("Error al inicializar cliente Supabase:", err);
+      console.error("Error al inicializar cliente:", err);
       return null;
     }
   }
@@ -300,7 +294,7 @@ export async function registerUser(user: Omit<UserProfile, 'id' | 'created_at'>,
 export async function loginUser(identifier: string, password?: string): Promise<{ success: boolean; data?: UserProfile; error?: string }> {
   const sb = getSupabase();
   if (!sb) {
-    return { success: false, error: 'No se pudo establecer conexión con el servidor Supabase. Verifica tu conexión.' };
+    return { success: false, error: 'No se pudo establecer conexión con el servidor. Verifica tu conexión.' };
   }
 
   const searchKey = identifier.toLowerCase();
@@ -373,13 +367,10 @@ export async function loginUser(identifier: string, password?: string): Promise<
   }
 }
 
-/**
- * Actualiza el perfil del usuario activo en Supabase.
- */
 export async function updateProfile(userId: string, updates: Partial<Omit<UserProfile, 'id' | 'created_at'>>): Promise<{ success: boolean; data?: UserProfile; error?: string }> {
   const sb = getSupabase();
   if (!sb) {
-    return { success: false, error: 'No se pudo conectar con Supabase.' };
+    return { success: false, error: 'No se pudo conectar con el servidor.' };
   }
 
   try {
@@ -410,7 +401,7 @@ export async function updateProfile(userId: string, updates: Partial<Omit<UserPr
 export async function deleteUserAccount(userId: string): Promise<{ success: boolean; error?: string }> {
   const sb = getSupabase();
   if (!sb) {
-    return { success: false, error: 'No se pudo conectar con Supabase.' };
+    return { success: false, error: 'No se pudo conectar con el servidor.' };
   }
 
   try {
@@ -435,7 +426,7 @@ export async function deleteUserAccount(userId: string): Promise<{ success: bool
 export async function fetchFiles(): Promise<SharedFile[]> {
   const sb = getSupabase();
   if (!sb) {
-    throw new Error('Servidor Supabase fuera de línea o sin conexión.');
+    throw new Error('Servidor fuera de línea o sin conexión.');
   }
 
   const { data, error } = await sb
@@ -530,7 +521,7 @@ export async function uploadFile(file: Omit<SharedFile, 'id' | 'createdAt' | 'li
 export async function deleteFile(fileId: string, currentUserId: string): Promise<{ success: boolean; error?: string }> {
   const sb = getSupabase();
   if (!sb) {
-    return { success: false, error: 'Supabase no disponible.' };
+    return { success: false, error: 'No disponible.' };
   }
 
   try {
@@ -557,7 +548,7 @@ export async function deleteFile(fileId: string, currentUserId: string): Promise
     if (!data || data.length === 0) {
       return { 
         success: false, 
-        error: 'No tienes permisos de Supabase RLS requeridos para eliminar este archivo.' 
+        error: 'No tienes permisos requeridos para eliminar este archivo.' 
       };
     }
     return { success: true };
@@ -616,7 +607,7 @@ export async function fetchChatMessages(fileId: string): Promise<ChatMessage[]> 
 export async function sendChatMessage(fileId: string, userId: string, alias: string, avatar: string | undefined, message: string): Promise<{ success: boolean; data?: ChatMessage; error?: string }> {
   const sb = getSupabase();
   if (!sb) {
-    return { success: false, error: 'Conexión a Supabase inactiva.' };
+    return { success: false, error: 'Conexión inactiva.' };
   }
 
   const createdAt = new Date().toISOString();
@@ -661,7 +652,7 @@ export async function sendChatMessage(fileId: string, userId: string, alias: str
 export async function fetchGroups(): Promise<Group[]> {
   const sb = getSupabase();
   if (!sb) {
-    throw new Error('Supabase no disponible.');
+    throw new Error('Servidor no disponible.');
   }
 
   const { data, error } = await sb
@@ -688,7 +679,7 @@ export async function fetchGroups(): Promise<Group[]> {
 export async function createGroup(group: Omit<Group, 'id' | 'createdAt'>): Promise<{ success: boolean; data?: Group; error?: string }> {
   const sb = getSupabase();
   if (!sb) {
-    return { success: false, error: 'Supabase no disponible.' };
+    return { success: false, error: 'No disponible.' };
   }
 
   const createdAt = new Date().toISOString();
@@ -725,7 +716,7 @@ export async function createGroup(group: Omit<Group, 'id' | 'createdAt'>): Promi
 export async function updateGroupSettings(groupId: string, updates: { name: string; description: string; image: string }): Promise<{ success: boolean; data?: Group; error?: string }> {
   const sb = getSupabase();
   if (!sb) {
-    return { success: false, error: 'Conexión a Supabase inactiva.' };
+    return { success: false, error: 'Conexión inactiva.' };
   }
 
   try {
@@ -768,7 +759,7 @@ export async function updateGroupSettings(groupId: string, updates: { name: stri
 export async function updateGroupMembers(groupId: string, members: string[]): Promise<{ success: boolean; data?: Group; error?: string }> {
   const sb = getSupabase();
   if (!sb) {
-    return { success: false, error: 'Conexión a Supabase inactiva.' };
+    return { success: false, error: 'Conexión inactiva.' };
   }
 
   try {
@@ -809,7 +800,7 @@ export async function updateGroupMembers(groupId: string, members: string[]): Pr
 export async function deleteCommunityGroup(groupId: string): Promise<{ success: boolean; error?: string }> {
   const sb = getSupabase();
   if (!sb) {
-    return { success: false, error: 'Conexión a Supabase inactiva.' };
+    return { success: false, error: 'Conexión inactiva.' };
   }
 
   try {
