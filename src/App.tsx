@@ -161,28 +161,6 @@ export default function App() {
     );
   };
 
-  const simulateOtherUserUpload = () => {
-    const randomFiles = [
-      { name: 'resumen_examen_final.pdf', sz: '1.4 MB' },
-      { name: 'logo_corporativo_edit.png', sz: '450 KB' },
-      { name: 'tutorial_introduccion_ts.mp4', sz: '42.8 MB' },
-      { name: 'index_component_v2.tsx', sz: '15 KB' }
-    ];
-    const randomUsers = ['@pedro_gomez', '@sofia_code', '@juan_sandbox', '@maria_m'];
-    
-    const fIdx = Math.floor(Math.random() * randomFiles.length);
-    const uIdx = Math.floor(Math.random() * randomUsers.length);
-    
-    const selFile = randomFiles[fIdx];
-    const selUser = randomUsers[uIdx];
-    
-    triggerNotification(
-      'Nuevo Archivo Compartido',
-      `${selUser} publicó un archivo: "${selFile.name}" (${selFile.sz}).`,
-      'upload'
-    );
-  };
-
   const getFilteredNotifications = () => {
     switch (notificationFilter) {
       case 'upload_download':
@@ -302,25 +280,20 @@ export default function App() {
             </button>
           </div>
         ) : !currentUser ? (
-          // Registration / Login flow wrapper
           <Auth onAuthSuccess={handleAuthSuccess} />
         ) : (
-          // Signed in UI Layout
           <>
             {/* DESKTOP SIDEBAR */}
             <aside className="hidden md:flex flex-col w-72 shrink-0 bg-white/95 dark:bg-[#121e1a]/90 backdrop-blur-md rounded-[28px] border border-slate-100 dark:border-white/10 p-5 shadow-xl justify-between overflow-y-auto z-45">
               <div className="space-y-6">
-                {/* Brand Header */}
                 <div className="flex items-center gap-2.5 px-2">
                   <div className="w-10 h-10 rounded-xl bg-[#10b981]/15 border border-[#10b981]/20 flex items-center justify-center">
-                    <img src="/app_logo.svg" alt="Logo" className="w-6.5 h-6.5 object-contain" />
+                    <img src="/app_logo.jpg" alt="Logo" className="w-6.5 h-6.5 object-contain" />
                   </div>
                   <div>
                     <h2 className="text-sm font-black text-slate-800 dark:text-white leading-none">TodoArchivos</h2>
                   </div>
                 </div>
-
-                {/* Connected user card banner */}
                 <button
                   onClick={() => setCurrentTab('cuenta')}
                   className="w-full text-left p-3.5 bg-slate-50 dark:bg-slate-900/40 hover:bg-slate-100 dark:hover:bg-slate-900/80 rounded-2xl border border-slate-100 dark:border-white/5 flex items-center gap-3 transition-colors cursor-pointer"
@@ -334,7 +307,6 @@ export default function App() {
                   </div>
                 </button>
 
-                {/* Primary navigation list */}
                 <nav className="space-y-1">
                   {[
                     { id: 'principal', lbl: 'Inicio', ico: Home },
@@ -368,44 +340,6 @@ export default function App() {
 
               {/* Visual adjustment controls & Logout */}
               <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-white/5">
-                {/* Light/Dark mode and font configuration drawer */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center bg-slate-55 dark:bg-slate-900/50 p-2 rounded-xl border border-slate-100/50 dark:border-white/5">
-                    <span className="text-[10px] uppercase font-extrabold text-slate-400 dark:text-slate-400 pl-1">Tema:</span>
-                    <button
-                      onClick={() => {
-                        const mode = !darkMode;
-                        setDarkMode(mode);
-                        localStorage.setItem('todoarchivos-theme', mode ? 'dark' : 'light');
-                      }}
-                      className="cursor-pointer text-[10px] font-extrabold bg-[#10b981]/15 text-[#10b981] hover:bg-[#10b981]/25 px-2.5 py-1 rounded-lg transition-colors"
-                    >
-                      {darkMode ? '🌙 Oscuro' : '☀️ Claro'}
-                    </button>
-                  </div>
-
-                  <div className="flex flex-col gap-1.5 bg-slate-55 dark:bg-slate-900/50 p-2 rounded-xl border border-slate-100/50 dark:border-white/5">
-                    <span className="text-[10px] uppercase font-extrabold text-slate-400 dark:text-slate-400 block pl-1">Tamaño de Texto:</span>
-                    <div className="flex justify-between gap-1 w-full mt-1">
-                      {(['sm', 'base', 'lg', 'xl'] as const).map((size) => (
-                        <button
-                          key={size}
-                          onClick={() => {
-                            setFontSize(size);
-                            localStorage.setItem('todoarchivos-font-size', size);
-                          }}
-                          className={`flex-1 text-[9px] font-black py-1 rounded-md text-center cursor-pointer transition-colors ${
-                            fontSize === size
-                              ? 'bg-[#10b981] text-white shadow-xs'
-                              : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100 border border-slate-150 dark:border-slate-700/50'
-                          }`}
-                        >
-                          {size.toUpperCase()}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
 
                 {/* Logout button */}
                 <button
