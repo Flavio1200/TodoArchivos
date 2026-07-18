@@ -122,11 +122,16 @@ export default function GroupsView({ currentUser, onOpenChat, onBack }: GroupsVi
   const [newGroupName, setNewGroupName] = useState<string>('');
   const [newGroupDesc, setNewGroupDesc] = useState<string>('');
   const [newGroupImg, setNewGroupImg] = useState<string>(PRESET_IMAGES[0]);
+  const [newGroupIsPrivate, setNewGroupIsPrivate] = useState<boolean>(false);
 
   // Edit Group Form state
   const [editGroupName, setEditGroupName] = useState<string>('');
   const [editGroupDesc, setEditGroupDesc] = useState<string>('');
   const [editGroupImg, setEditGroupImg] = useState<string>('');
+  const [editGroupIsPrivate, setEditGroupIsPrivate] = useState<boolean>(false);
+
+  // Invite user state
+  const [inviteInput, setInviteInput] = useState<string>('');
 
   // Group Publish Form state
   const [pubName, setPubName] = useState<string>('');
@@ -183,7 +188,9 @@ export default function GroupsView({ currentUser, onOpenChat, onBack }: GroupsVi
       description: newGroupDesc.trim() || 'Sin descripción provista.',
       image: newGroupImg,
       creatorId: currentUser.id,
-      members: [currentUser.id]
+      members: [currentUser.id],
+      isPrivate: newGroupIsPrivate,
+      invitations: []
     };
 
     const res = await createGroup(groupToCreate);
@@ -195,6 +202,7 @@ export default function GroupsView({ currentUser, onOpenChat, onBack }: GroupsVi
       // Reset fields & navigation
       setNewGroupName('');
       setNewGroupDesc('');
+      setNewGroupIsPrivate(false);
       setIsCreating(false);
       setActiveGroup(res.data);
       alert(`🎉 ¡El grupo "${trimmedName}" ha sido creado con éxito!`);
@@ -211,6 +219,12 @@ export default function GroupsView({ currentUser, onOpenChat, onBack }: GroupsVi
     }
 
     if (group.members.includes(currentUser.id)) return;
+
+    const isInvited = group.invitations?.includes(currentUser.id);
+    if (group.isPrivate && !isInvited) {
+      alert('⚠️ Este grupo es privado y requiere una invitación del administrador para poder unirse.');
+      return;
+    }
 
     const newMembersList = [...group.members, currentUser.id];
     const res = await updateGroupMembers(group.id, newMembersList);
@@ -271,7 +285,9 @@ export default function GroupsView({ currentUser, onOpenChat, onBack }: GroupsVi
     const updates = {
       name: trimmedName,
       description: editGroupDesc.trim(),
-      image: editGroupImg
+      image: editGroupImg,
+      isPrivate: editGroupIsPrivate,
+      invitations: activeGroup.invitations || []
     };
 
     const res = await updateGroupSettings(activeGroup.id, updates);
@@ -431,12 +447,15 @@ export default function GroupsView({ currentUser, onOpenChat, onBack }: GroupsVi
   
   const myJoinedGroups = groups.filter(g => isJoined(g));
   const popularGroupsToJoin = groups.filter(g => !isJoined(g));
+  const pendingInvitations = groups.filter(g => g.isPrivate && g.invitations?.includes(currentUser.id) && !isJoined(g));
+
 
   const startEditGroup = () => {
     if (!activeGroup) return;
     setEditGroupName(activeGroup.name);
     setEditGroupDesc(activeGroup.description);
     setEditGroupImg(activeGroup.image);
+    setEditGroupIsPrivate(!!activeGroup.isPrivate);
     setIsEditing(true);
   };
 
@@ -669,6 +688,34 @@ export default function GroupsView({ currentUser, onOpenChat, onBack }: GroupsVi
                 />
               </div>
 
+              {/* Group Privacy Type */}
+              <div className="space-y-1.5 p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Privacidad del Grupo</label>
+                <div className="flex flex-col sm:flex-row gap-3 mt-1.5">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="isPrivateRadioCreate"
+                      checked={!newGroupIsPrivate}
+                      onChange={() => setNewGroupIsPrivate(false)}
+                      className="text-[#10b981] focus:ring-[#10b981]"
+                    />
+                    <span>🌍 Público (Cualquiera puede unirse)</span>
+                  </label>
+                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="isPrivateRadioCreate"
+                      checked={newGroupIsPrivate}
+                      onChange={() => setNewGroupIsPrivate(true)}
+                      className="text-[#10b981] focus:ring-[#10b981]"
+                    />
+                    <span>🔒 Privado (Solo por invitación del admin)</span>
+                  </label>
+                </div>
+              </div>
+
+
               {/* Submit button */}
               <button
                 type="submit"
@@ -798,8 +845,7 @@ export default function GroupsView({ currentUser, onOpenChat, onBack }: GroupsVi
             </div>
           </div>
 
-          {/* MEMBER AND EXPULSION ZONE */}
-          {isJoined(activeGroup) && (
+           {isJoined(activeGroup) && (
             <div className="bg-white/95 rounded-[22px] p-4 shadow-md border border-slate-200/30">
               <h4 className="text-xs font-bold text-slate-705 uppercase tracking-wide mb-2.5">Miembros actuales ({activeGroup.members.length})</h4>
               <div className="flex flex-col gap-2 max-h-[140px] overflow-y-auto">
@@ -835,6 +881,118 @@ export default function GroupsView({ currentUser, onOpenChat, onBack }: GroupsVi
                   </div>
                 ))}
               </div>
+
+              {/* ADMIN INVITATION SECTION */}
+              {activeGroup.creatorId === currentUser.id && (
+                <div className="pt-3.5 border-t border-slate-100 space-y-2">
+                  <h5 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1 leading-none">
+                    <span>✉️ Invitar miembro al grupo</span>
+                    {activeGroup.isPrivate && (
+                      <span className="text-[7px] font-black bg-purple-50 text-purple-600 px-1 py-0.2 rounded uppercase border border-purple-100">Privado</span>
+                    )}
+                  </h5>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Alias (ej: juan) o correo del usuario..."
+                      value={inviteInput}
+                      onChange={(e) => setInviteInput(e.target.value)}
+                      className="flex-1 bg-slate-50 border border-slate-200 hover:border-slate-300 focus:bg-white rounded-xl py-1.5 px-3 text-xs text-slate-800 font-semibold focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const trimmed = inviteInput.trim();
+                        if (!trimmed) return;
+                        
+                        // Search for user
+                        const invitedUser = await findUserByAliasOrEmail(trimmed);
+                        if (!invitedUser) {
+                          alert('⚠️ No se encontró ningún usuario con ese alias o correo.');
+                          return;
+                        }
+                        
+                        if (activeGroup.members.includes(invitedUser.id)) {
+                          alert(`⚠️ @${invitedUser.alias} ya es miembro de este grupo.`);
+                          return;
+                        }
+                        
+                        const currentInvites = activeGroup.invitations || [];
+                        if (currentInvites.includes(invitedUser.id)) {
+                          alert(`⚠️ @${invitedUser.alias} ya tiene una invitación pendiente.`);
+                          return;
+                        }
+                        
+                        const updatedInvites = [...currentInvites, invitedUser.id];
+                        const updateRes = await updateGroupSettings(activeGroup.id, {
+                          name: activeGroup.name,
+                          description: activeGroup.description,
+                          image: activeGroup.image,
+                          isPrivate: !!activeGroup.isPrivate,
+                          invitations: updatedInvites
+                        });
+                        
+                        if (updateRes.success && updateRes.data) {
+                          const updatedGroups = await fetchGroups();
+                          setGroups(updatedGroups);
+                          setActiveGroup(updateRes.data);
+                          alert(`✉️ ¡Invitación enviada con éxito a @${invitedUser.alias}!`);
+                          setInviteInput('');
+                        } else {
+                          alert(`⚠️ Error al enviar invitación: ${updateRes.error}`);
+                        }
+                      }}
+                      className="bg-[#10b981] hover:bg-[#059669] text-white font-black text-xs px-4 rounded-xl shadow-sm transition-colors cursor-pointer shrink-0"
+                    >
+                      Enviar
+                    </button>
+                  </div>
+
+                  {/* List of active pending invitations for the group */}
+                  {activeGroup.invitations && activeGroup.invitations.length > 0 && (
+                    <div className="pt-2 space-y-1">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Invitaciones pendientes ({activeGroup.invitations.length})</p>
+                      <div className="flex flex-wrap gap-1.5 max-h-16 overflow-y-auto">
+                        {activeGroup.invitations.map((inviteId) => {
+                          const sim = SIMULATED_MEMBERS.find(sm => sm.id === inviteId);
+                          const alias = sim ? sim.alias : (inviteId === currentUser.id ? currentUser.alias : 'Usuario');
+                          return (
+                            <span 
+                              key={inviteId} 
+                              className="inline-flex items-center gap-1 bg-purple-50 text-purple-650 border border-purple-100 rounded-full px-2 py-0.5 text-[9px] font-bold"
+                            >
+                              <span>@{alias}</span>
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  const updated = (activeGroup.invitations || []).filter(id => id !== inviteId);
+                                  const updateRes = await updateGroupSettings(activeGroup.id, {
+                                    name: activeGroup.name,
+                                    description: activeGroup.description,
+                                    image: activeGroup.image,
+                                    isPrivate: !!activeGroup.isPrivate,
+                                    invitations: updated
+                                  });
+                                  if (updateRes.success) {
+                                    const updatedGroups = await fetchGroups();
+                                    setGroups(updatedGroups);
+                                    setActiveGroup(updateRes.data);
+                                    alert('❌ Invitación cancelada.');
+                                  }
+                                }}
+                                className="hover:text-rose-500 font-extrabold ml-1 cursor-pointer"
+                                title="Cancelar invitación"
+                              >
+                                ✕
+                              </button>
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -1068,6 +1226,33 @@ export default function GroupsView({ currentUser, onOpenChat, onBack }: GroupsVi
                   onChange={(e) => setEditGroupImg(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 hover:border-slate-300 focus:bg-white rounded-xl py-1.5 px-3.5 text-[10px] text-slate-650 font-mono focus:outline-none focus:ring-2 focus:ring-[#10b981] mt-2"
                 />
+              </div>
+
+              {/* Group Privacy Type */}
+              <div className="space-y-1.5 p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Privacidad del Grupo</label>
+                <div className="flex flex-col sm:flex-row gap-3 mt-1.5">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="isPrivateRadioEdit"
+                      checked={!editGroupIsPrivate}
+                      onChange={() => setEditGroupIsPrivate(false)}
+                      className="text-[#10b981] focus:ring-[#10b981]"
+                    />
+                    <span>🌍 Público (Cualquiera puede unirse)</span>
+                  </label>
+                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-705 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="isPrivateRadioEdit"
+                      checked={editGroupIsPrivate}
+                      onChange={() => setEditGroupIsPrivate(true)}
+                      className="text-[#10b981] focus:ring-[#10b981]"
+                    />
+                    <span>🔒 Privado (Solo por invitación del admin)</span>
+                  </label>
+                </div>
               </div>
 
               <div className="flex gap-2">

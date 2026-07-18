@@ -420,9 +420,6 @@ export async function deleteUserAccount(userId: string): Promise<{ success: bool
   }
 }
 
-/**
- * Obtiene todos los archivos desde Supabase.
- */
 export async function fetchFiles(): Promise<SharedFile[]> {
   const sb = getSupabase();
   if (!sb) {
@@ -652,7 +649,7 @@ export async function sendChatMessage(fileId: string, userId: string, alias: str
 export async function fetchGroups(): Promise<Group[]> {
   const sb = getSupabase();
   if (!sb) {
-    throw new Error('Servidor no disponible.');
+    throw new Error('Supabase no disponible.');
   }
 
   const { data, error } = await sb
@@ -662,16 +659,76 @@ export async function fetchGroups(): Promise<Group[]> {
 
   if (error) throw error;
 
-  return (data || []).map((g: any) => ({
+  return (data || []).map((g: any) => parseGroupMetadata(g));
+
+  // return (data || []).map((g: any) => ({
+  //   id: g.id,
+  //   name: g.name,
+  //   description: g.description,
+  //   image: g.image,
+  //   creatorId: g.creator_id,
+  //   members: g.members || [],
+  //   createdAt: g.created_at
+  // }));
+}
+
+export function parseGroupMetadata(g: any): Group {
+  if (!g) return g;
+  let isPrivate = false;
+  let invitations: string[] = [];
+  let desc = g.description || '';
+
+  if (desc.startsWith('__JSON_META__[')) {
+    try {
+      const closingBracketIndex = desc.indexOf(']');
+      if (closingBracketIndex !== -1) {
+        const metaStr = desc.substring(13, closingBracketIndex);
+        const meta = JSON.parse(metaStr);
+        isPrivate = !!meta.isPrivate;
+        invitations = meta.invitations || [];
+        desc = desc.substring(closingBracketIndex + 1);
+      }
+    } catch (e) {
+      console.error("Error parsing group metadata:", e);
+    }
+  }
+
+  return {
     id: g.id,
     name: g.name,
-    description: g.description,
+    description: desc,
     image: g.image,
     creatorId: g.creator_id,
     members: g.members || [],
-    createdAt: g.created_at
-  }));
+    createdAt: g.created_at,
+    isPrivate,
+    invitations
+  };
 }
+
+export function encodeGroupDescription(desc: string, isPrivate: boolean, invitations: string[]): string {
+  const meta = { isPrivate, invitations };
+  return `__JSON_META__[${JSON.stringify(meta)}]${desc}`;
+}
+
+export async function findUserByAliasOrEmail(identifier: string): Promise<UserProfile | null> {
+  const sb = getSupabase();
+  if (!sb) return null;
+  const cleanId = identifier.trim().toLowerCase();
+  try {
+    const { data, error } = await sb
+      .from('ta_users')
+      .select('*')
+      .or(`alias.ilike.${cleanId},email.ilike.${cleanId}`)
+      .maybeSingle();
+
+    if (error || !data) return null;
+    return data as UserProfile;
+  } catch {
+    return null;
+  }
+}
+
 
 /**
  * Crea un grupo nuevo en Supabase.
@@ -679,16 +736,22 @@ export async function fetchGroups(): Promise<Group[]> {
 export async function createGroup(group: Omit<Group, 'id' | 'createdAt'>): Promise<{ success: boolean; data?: Group; error?: string }> {
   const sb = getSupabase();
   if (!sb) {
-    return { success: false, error: 'No disponible.' };
+    return { success: false, error: 'Supabase no disponible.' };
   }
 
   const createdAt = new Date().toISOString();
   try {
+    const encodedDesc = encodeGroupDescription(
+      group.description || '', 
+      !!group.isPrivate, 
+      group.invitations || []
+    );
+
     const { data, error } = await sb
       .from('ta_groups')
       .insert({
         name: group.name,
-        description: group.description,
+        description: encodedDesc,
         image: group.image,
         creator_id: group.creatorId,
         members: group.members,
@@ -699,9 +762,13 @@ export async function createGroup(group: Omit<Group, 'id' | 'createdAt'>): Promi
     if (error) throw error;
 
     const savedGroup = data && data[0];
+    if (savedGroup) {
+      return { success: true, data: parseGroupMetadata(savedGroup) };
+    }
+    
     const newGroup: Group = {
       ...group,
-      id: savedGroup ? savedGroup.id : '',
+      id: '',
       createdAt: createdAt
     };
     return { success: true, data: newGroup };
@@ -713,18 +780,24 @@ export async function createGroup(group: Omit<Group, 'id' | 'createdAt'>): Promi
 /**
  * Modifica la imagen, descripción o detalles de un grupo.
  */
-export async function updateGroupSettings(groupId: string, updates: { name: string; description: string; image: string }): Promise<{ success: boolean; data?: Group; error?: string }> {
+export async function updateGroupSettings(groupId: string, updates: { name: string; description: string; image: string; isPrivate?: boolean; invitations?: string[] }): Promise<{ success: boolean; data?: Group; error?: string }> {
   const sb = getSupabase();
   if (!sb) {
-    return { success: false, error: 'Conexión inactiva.' };
+    return { success: false, error: 'Conexión a Supabase inactiva.' };
   }
 
   try {
+    const encodedDesc = encodeGroupDescription(
+      updates.description || '',
+      updates.isPrivate ?? false,
+      updates.invitations || []
+    );
+
     const { data, error } = await sb
       .from('ta_groups')
       .update({
         name: updates.name,
-        description: updates.description,
+        description: encodedDesc,
         image: updates.image
       })
       .eq('id', groupId)
@@ -733,18 +806,9 @@ export async function updateGroupSettings(groupId: string, updates: { name: stri
     if (error) throw error;
 
     if (data && data[0]) {
-      const g = data[0];
       return {
         success: true,
-        data: {
-          id: g.id,
-          name: g.name,
-          description: g.description,
-          image: g.image,
-          creatorId: g.creator_id,
-          members: g.members || [],
-          createdAt: g.created_at
-        }
+        data: parseGroupMetadata(data[0])
       };
     }
     throw new Error("Grupo no encontrado.");

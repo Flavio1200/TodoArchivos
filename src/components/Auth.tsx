@@ -92,11 +92,9 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
 
   return (
     <div className="flex-1 flex flex-col rounded-xl md:flex-row min-h-screen md:bg-[linear-gradient(0deg,#111B1F,#075427)] overflow-hidden">
-      {/* LEFT COLUMN: Features & Branding (Visible on desktop/monitors, hidden on phone screens) */}
       <div className="hidden md:flex md:w-1/2 flex-col justify-between p-12 text-white relative overflow-hidden bg-gradient-to-b from-[#10b981]/25 via-[#06b6d4]/10 to-transparent border-r border-white/5">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.15),transparent_60%)] pointer-events-none" />
         
-        {/* Upper Brand Info */}
         <div className="z-10">
           <div className="flex items-center gap-3">
             <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/35 shadow-xl p-2 relative overflow-hidden hover:rotate-3 transition-transform duration-300">
@@ -124,7 +122,6 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
           </div>
         </div>
 
-        {/* Feature Grid Bento cards */}
         <div className="z-10 my-8 grid grid-cols-2 gap-4">
           <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
             <span className="w-8 h-8 rounded-lg bg-emerald-500/25 text-emerald-400 flex items-center justify-center font-bold text-sm mb-2.5">📂</span>
@@ -145,15 +142,12 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
           </div>
         </div>
 
-        {/* Footer info */}
         <div className="text-slate-500 text-[10px] font-bold uppercase tracking-wider z-10 select-none">
           © 2026 TodoArchivos
         </div>
       </div>
 
-      {/* RIGHT COLUMN: Auth Box (Adapts to full screen on mobile, and standard half screen card on desktop) */}
       <div className="w-full md:w-1/2 flex flex-col justify-between px-6 py-8 md:py-12 overflow-y-auto md:bg-[linear-gradient(0deg,#111B1F,#075427)]">
-        {/* On mobile, show header logo */}
         <div className="flex md:hidden flex-col items-center justify-center my-4">
           <div className="w-20 h-20 rounded-[28px] bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-xl mb-3 relative overflow-hidden p-2.5">
             <img 
@@ -171,9 +165,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
           </p>
         </div>
 
-        {/* Center alignment card for desktop layout containment */}
         <div className="w-full max-w-sm mx-auto my-auto">
-          {/* Auth Fields */}
           <div className="w-full bg-white dark:bg-[#111827] rounded-[28px] p-6 lg:p-7 shadow-2xl border border-slate-100 dark:border-white/5">
             <h2 className="text-[#10b981] font-black text-xl mb-4 text-center tracking-tight">
               {isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}
@@ -187,10 +179,8 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
             )}
 
             <form onSubmit={handleAction} className="space-y-3.5">
-              {/* REGISTER EXTRA FIELDS */}
               {!isLogin && (
                 <>
-                  {/* Profile Name */}
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
                       <User className="w-4 h-4" />
@@ -205,7 +195,6 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                     />
                   </div>
 
-                  {/* Alias */}
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
                       <Tag className="w-4 h-4" />
@@ -220,7 +209,6 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                     />
                   </div>
 
-                  {/* Phone number */}
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
                       <Phone className="w-4 h-4" />
@@ -237,7 +225,6 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                 </>
               )}
 
-              {/* Email (Always needed) */}
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
                   <Mail className="w-4 h-4" />
@@ -252,7 +239,6 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                 />
               </div>
 
-              {/* Password (Always needed) */}
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
                   <Key className="w-4 h-4" />
@@ -274,7 +260,6 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                 </button>
               </div>
 
-              {/* Register optional Profile Avatar selection */}
               {!isLogin && (
                 <div className="space-y-2 p-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-150 dark:border-slate-800 rounded-xl">
                   <label className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400 dark:text-slate-500 block">
@@ -297,7 +282,6 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                     ))}
                   </div>
 
-                  {/* Custom Uploader file */}
                   <div className="flex items-center gap-2">
                     <label className="flex-1 cursor-pointer flex items-center justify-center gap-1 bg-white dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-700 rounded-lg py-1.5 px-3 text-[10.5px] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750 transition-all font-bold">
                       <Camera className="w-3.5 h-3.5 text-slate-450" />
@@ -318,7 +302,6 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
                 </div>
               )}
 
-              {/* Submit button */}
               <button
                 type="submit"
                 disabled={loading}
@@ -342,7 +325,6 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
               </button>
             </form>
 
-            {/* Change auth mode */}
             <div className="mt-4 pt-3.5 border-t border-slate-100 dark:border-slate-800 text-center">
               <button
                 onClick={() => {
@@ -357,7 +339,6 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
           </div>
         </div>
 
-        {/* Mobile-only footer copyright */}
         <div className="mt-6 md:hidden text-center text-white/50 text-[9px] font-bold uppercase tracking-wider">
           © 2026 TodoArchivos
         </div>

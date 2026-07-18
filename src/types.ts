@@ -54,6 +54,8 @@ export interface Group {
   creatorId: string; // User ID of creator
   members: string[]; // List of user IDs in group (Max 150)
   createdAt: string;
+  isPrivate?: boolean; // True if the group is private
+  invitations?: string[]; // Array of invited user IDs
 }
 
 export interface ChatMessage {
